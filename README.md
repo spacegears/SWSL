@@ -1,2 +1,2 @@
 # SWSL
-Steam Workshop Subscription Lister
+Steam Workshop Subscription Lister (work in progress)
