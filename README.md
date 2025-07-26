@@ -3,13 +3,12 @@ This is an updated version of Bryn "BrynM" Mosher's excellent [Steam Workshop Su
 
 ## What's new?
 - Added UserScript metadata block, so it could be used with userscript managers such as Tampermonkey or Greasemonkey
-- The script doesn't need to be run manually from the console anymore. A "Run SWSL" button is injected into the Workshop menu on the right, it can be started from there 
-- The script was broken when less than 10 items were listed for a game, when `appid` was `0`, and when `p` wasn't defined. The script was updated to handle these "properly" (at least I hope so, I have no effin idea what I'm doing)
-- Updated script to include date of the last update in the exported files
-- HTML/CSS to match the official Steam Workshop colors and style
-- HTML output was updated to include some metadata
-- HTML output was updated to use a responsive grid instead of a table
-- HTML output was updated to match the official Steam Workshop colors and style
+- Improved script handling: it doesn't need to be run manually from the console anymore. A "Run SWSL" button is injected into the Workshop menu on the right, it can be started from there 
+- Fixed some bugs: The script was broken when less than 10 items were listed for a game, when `appid` was `0`, and when `p` wasn't defined. These should be handled "properly" now. (at least I hope so, I have no effin idea what I'm doing)
+- Updated output to include date of the last update
+- Updated output to include some metadata
+- Updated HTML output to use a responsive grid instead of a table
+- Updated HTML output to match the official Steam Workshop colors and style
 - Fixed typos and other minor (mostly visual) adjustments
 
 ## Preview
