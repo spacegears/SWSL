@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Steam Workshop Subscription Lister (SWSL)
 // @description  Generates HTML, JSON, TXT, CSV output of your Steam Workshop subscriptions for a game.
-// @version      1.0.1
+// @version      1.0.2
 // @author       spacegears
 // @match        https://steamcommunity.com/id/*/myworkshopfiles/?appid=*
 // @namespace    https://github.com/spacegears/swsl
-// @downloadURL  https://raw.githubusercontent.com/spacegears/SWSL/refs/heads/main/SWSL.js
-// @updateURL    https://raw.githubusercontent.com/spacegears/SWSL/refs/heads/main/SWSL.js
+// @downloadURL  https://raw.githubusercontent.com/spacegears/SWSL/master/SWSL.js
+// @updateURL    https://raw.githubusercontent.com/spacegears/SWSL/master/SWSL.js
 // @icon         https://steamcommunity.com/favicon.ico
 // @run-at       document-end
 // ==/UserScript==
@@ -58,7 +58,7 @@
 
 		newEle = document.createElement('a');
 		newEle.id = eleId;
-		newEle.style = linkStyle;
+		newEle.classList.add("swsl-links");
 		newEle.innerText = upperName;
 		newEle.href = 'data:'+details.type+';charset=utf-8,'+encodeURIComponent(dataToType(details.typeName, allData));
 		newEle.target = '_blank';
@@ -81,9 +81,8 @@
 				logMsg('[WARNING] No data found in storage for key', storageKey);
 				continue;
 			}
-			currData.map(item => {
-				allData.push(item);
-			});
+
+            currData.forEach(item => allData.push(item));
 		}
 
 		return allData;
@@ -381,7 +380,7 @@
     }
 
     function startSWSL () {
-        sessionStorage.setItem("swsl-running", JSON.stringify(true));
+        sessionStorage.setItem("swsl-running", 1);
 
         const urlParams = new URLSearchParams(location.search);
         const pValue = urlParams.get("p");
@@ -396,7 +395,7 @@
 
 	function runSWSL () {
         let appIDset = checkAppID();
-        let swslRunning = JSON.parse(sessionStorage.getItem("swsl-running") || "false");
+        let swslRunning = sessionStorage.getItem("swsl-running") === 1;
 
         if (!appIDset || !swslRunning) {
             return;
@@ -430,7 +429,7 @@
 			contEle.id = contEleId;
 			document.querySelector('body').appendChild(contEle);
 		}
-		contEle.style = containerStyle;
+		contEle.classList.add("swsl-container");
 		contEle.innerHTML = '';
 
 		const headerEleId = scriptName+'-header';
@@ -438,7 +437,7 @@
 		headerEle.id = contEleId;
 		headerEle.innerHTML = 'Download links for:<br><strong>'+appName+'</strong>';
 		contEle.appendChild(headerEle);
-		headerEle.style = headerStyle;
+        headerEle.classList.add("swsl-header");
 		contEle.appendChild(headerEle);
 		dbgMsg('Created container', contEleId, contEle);
 
@@ -447,9 +446,54 @@
 		createFileLink(contEle, 'txt', allData);
         createFileLink(contEle, 'csv', allData);
 
-        sessionStorage.setItem("swsl-running", JSON.stringify(false));
+        sessionStorage.setItem("swsl-running", 0);
         document.getElementById("runSWSL").querySelector("span").innerHTML = "Run SWSL";
 	}
+
+    function addStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .swsl-container {
+        display: block;
+		position: fixed;
+		top: 114px;
+		/* bottom: 0; */
+		min-height: 100px;
+		min-width: 100px;
+		margin: 10px;
+		padding: 10px;
+		text-align: center;
+		border: 2px solid #417b9c;
+		z-index: 500;
+		background: #101822;
+		opacity: 85%;
+        }
+
+        .swsl-header {
+        display: block;
+		margin: 0;
+		padding: 0;
+		padding-bottom: 5px;
+		width: 100%;
+		text-align: center;
+		color: #8f98a0;
+        }
+
+        .swsl-links {
+        display: block;
+		padding: 5px;
+		margin: 5px;
+		margin-bottom: 0px;
+		text-align: center;
+        border: 2px solid #172030;
+		background: linear-gradient(to bottom, #a4d007 5%, #536904 95%);
+		color: white;
+		font-weight: normal;
+		z-index: 500;
+        }
+        `;
+    document.head.appendChild(style);
+}
 
 	var scriptName = 'swsl';
     var scriptVersion = GM_info.script.version;
@@ -458,48 +502,10 @@
 	var appUser = getUser();
     var profileID = getProfileID();
     var created = createdDate();
-	var containerCSS = [
-		'display: block',
-		'position: fixed',
-		'top: 114px',
-		// 'bottom: 0',
-		'min-height: 100px',
-		'min-width: 100px',
-		'margin: 10px',
-		'padding: 10px',
-		'text-align: center',
-		'border: 2px solid #417b9c',
-		'z-index: 500',
-		'background: #101822',
-		'opacity: 85%',
-	];
-	var containerStyle = containerCSS.join(';');
-	var headerCSS = [
-		'display: block',
-		'margin: 0',
-		'padding: 0',
-		'padding-bottom: 5px',
-		'width: 100%',
-		'text-align: center',
-		'color: #8f98a0',
-	];
-	var headerStyle = headerCSS.join(';');
-	var linkCSS = [
-		'display: block',
-		'padding: 5px',
-		'margin: 5px',
-		'margin-bottom: 0px',
-		'text-align: center',
-        'border: 2px solid #172030',
-		'background: linear-gradient(to bottom, #a4d007 5%, #536904 95%)',
-		'color: white',
-		'font-weight: normal',
-		'z-index:500',
-	];
-	var linkStyle = linkCSS.join(';');
 
     addSWSLButton();
     runSWSL();
 
-    document.getElementById("runSWSL").onclick = () => startSWSL();
+    document.getElementById("runSWSL").addEventListener('click', startSWSL);
+
 })();
